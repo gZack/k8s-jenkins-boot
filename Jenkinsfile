@@ -1,4 +1,8 @@
 pipeline {
+  environment {
+	registry = "zekariyas/k8s-jenkins-boot"
+	registryCredential = 'dockerhub_id'
+  }
   agent {
     kubernetes {
       label 'jenkins-jenkins-agent'  // all your pods will be named with this prefix, followed by a unique id
@@ -16,7 +20,14 @@ pipeline {
     stage('Push') {
 	  steps {
 		container('docker') {
-		  sh "docker build -t k8s-jenkins-boot:$BUILD_NUMBER ."
+		  //sh "docker build -t k8s-jenkins-boot:$BUILD_NUMBER ."
+		  //sh "docker push k8s-jenkins-boot:$BUILD_NUMBER"
+		  script {
+		  dockerImage = docker.build registry + ":$BUILD_NUMBER"
+			  docker.withRegistry( '', registryCredential ) {
+				  dockerImage.push()
+			  }
+		  }
 		}
 	  }
 	}
