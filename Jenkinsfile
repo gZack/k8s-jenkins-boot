@@ -13,6 +13,12 @@ pipeline {
         sh "mvn clean package"
       }
     }
-
+    stage('Push') {
+	  steps {
+		container('docker') {
+		  sh "docker build -t k8s-jenkins-boot:$BUILD_NUMBER ."
+		}
+	  }
+	}
   }
 }
