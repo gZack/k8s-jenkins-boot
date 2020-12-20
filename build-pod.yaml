@@ -12,6 +12,9 @@ spec:
           cpu: "500m"
         limits:
           memory: "1Gi"
+      volumeMounts:
+        - mountPath: "/root/.m2"
+          name: m2
     - name: docker
       image: docker:18.06.1
       command: ["tail", "-f", "/dev/null"]
@@ -23,3 +26,6 @@ spec:
     - name: docker
       hostPath:
         path: /var/run/docker.sock
+    - name: m2
+      persistentVolumeClaim:
+        claimName: jenkins
