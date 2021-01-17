@@ -23,10 +23,15 @@ pipeline {
 		  //sh "docker build -t k8s-jenkins-boot:$BUILD_NUMBER ."
 		  //sh "docker push k8s-jenkins-boot:$BUILD_NUMBER"
 		  script {
-		  dockerImage = docker.build registry + ":$BUILD_NUMBER"
-			  docker.withRegistry( '', registryCredential ) {
-				  dockerImage.push()
-			  }
+		   	dockerImage = docker.build registry + ":$BUILD_NUMBER"
+		   	withCredentials([usernamePassword(credentialsId: 'dockerhub_id', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                // the code here can access $pass and $user
+                sh 'docker login --username $user --password-stdin $pass'
+                dockerImage.push()
+            }
+			// docker.withRegistry( '', registryCredential ) {
+			//  dockerImage.push()
+			// }
 		  }
 		}
 	  }
